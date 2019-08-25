@@ -45,6 +45,17 @@ func NewHTTP(code int, e interface{}) error {
 	return newError(code, "", e)
 }
 
+// WrapHTTP wraps error
+func WrapHTTP(e error) error {
+	if er, ok := e.(err); ok {
+		return er
+	}
+	if er, ok := e.(error); ok {
+		return newError(0, "", er.Error())
+	}
+	return newError(0, "", e)
+}
+
 func newError(code int, title string, detail interface{}) err {
 	if code < 400 || code > 599 {
 		code = http.StatusInternalServerError
