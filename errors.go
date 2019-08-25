@@ -29,6 +29,9 @@ func (e err) Error() string {
 
 // New error
 func New(e interface{}) error {
+	if er, ok := e.(error); ok {
+		return newError(0, "", er.Error())
+	}
 	return newError(0, "", e)
 }
 
