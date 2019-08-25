@@ -75,6 +75,17 @@ func WrapHTTP(e error) Error {
 	return newError(0, "", e)
 }
 
+// Wrap error
+func Wrap(e error, message string) error {
+	if e == nil {
+		return nil
+	}
+	if er, ok := e.(Error); ok {
+		return newError(er.GetCode(), er.GetTitle(), fmt.Sprintf("%s: %s", message, er.Error()))
+	}
+	return newError(0, "", fmt.Sprintf("%s: %s", message, e.Error()))
+}
+
 func newError(code int, title string, detail interface{}) Error {
 	if code < 400 || code > 599 {
 		code = http.StatusInternalServerError
