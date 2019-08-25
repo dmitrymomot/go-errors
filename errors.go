@@ -7,6 +7,13 @@ import (
 )
 
 type (
+	// Error interface
+	Error interface {
+		error
+		GetCode() int
+		GetTitle() string
+		GetDetail() interface{}
+	}
 	// Error struct
 	err struct {
 		Code   int         `json:"code"`
@@ -27,8 +34,20 @@ func (e err) Error() string {
 	return http.StatusText(e.Code)
 }
 
+func (e err) GetCode() int {
+	return e.Code
+}
+
+func (e err) GetTitle() string {
+	return e.Title
+}
+
+func (e err) GetDetail() interface{} {
+	return e.Detail
+}
+
 // New error
-func New(e interface{}) error {
+func New(e interface{}) Error {
 	if er, ok := e.(error); ok {
 		return newError(0, "", er.Error())
 	}
@@ -36,18 +55,18 @@ func New(e interface{}) error {
 }
 
 // NewValidation error
-func NewValidation(e url.Values) error {
+func NewValidation(e url.Values) Error {
 	return newError(http.StatusUnprocessableEntity, "Validation Error", e)
 }
 
 // NewHTTP error
-func NewHTTP(code int, e interface{}) error {
+func NewHTTP(code int, e interface{}) Error {
 	return newError(code, "", e)
 }
 
 // WrapHTTP wraps error
-func WrapHTTP(e error) error {
-	if er, ok := e.(err); ok {
+func WrapHTTP(e error) Error {
+	if er, ok := e.(Error); ok {
 		return er
 	}
 	if er, ok := e.(error); ok {
@@ -56,7 +75,7 @@ func WrapHTTP(e error) error {
 	return newError(0, "", e)
 }
 
-func newError(code int, title string, detail interface{}) err {
+func newError(code int, title string, detail interface{}) Error {
 	if code < 400 || code > 599 {
 		code = http.StatusInternalServerError
 	}
