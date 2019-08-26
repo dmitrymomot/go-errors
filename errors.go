@@ -87,6 +87,10 @@ func Wrap(e error, message string) error {
 }
 
 func newError(code int, title string, detail interface{}) Error {
+	if er, ok := detail.(Error); ok {
+		return er
+	}
+
 	if code < 400 || code > 599 {
 		code = http.StatusInternalServerError
 	}
