@@ -48,6 +48,9 @@ func (e err) GetDetail() interface{} {
 
 // New error
 func New(e interface{}) Error {
+	if er, ok := e.(Error); ok {
+		return er
+	}
 	if er, ok := e.(error); ok {
 		return newError(0, "", er.Error())
 	}
