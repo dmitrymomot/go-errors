@@ -67,17 +67,6 @@ func NewHTTP(code int, e interface{}) Error {
 	return newError(code, "", e)
 }
 
-// WrapHTTP wraps error
-func WrapHTTP(e error) Error {
-	if er, ok := e.(Error); ok {
-		return er
-	}
-	if er, ok := e.(error); ok {
-		return newError(0, "", er.Error())
-	}
-	return newError(0, "", e)
-}
-
 // Wrap error
 func Wrap(e error, message string) error {
 	if e == nil {
